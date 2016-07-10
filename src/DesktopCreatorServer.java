@@ -1,3 +1,4 @@
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /**
@@ -10,7 +11,7 @@ public class DesktopCreatorServer {
 	private static LayerThread layerThread;
 	private static ArrayList<DownloadThread> downloadThreads;
 	private static Monitor m;
-	private static ServerIO server;
+	private static WebsocketServerIO server;
 	
 	public static void main(String args[])
 	{
@@ -34,8 +35,14 @@ public class DesktopCreatorServer {
 			downloadThreads.add(d);
 		}
 		
-		server = new ServerIO(m);
-		Thread serverThread = new Thread(server);
-		serverThread.start();
+		try {
+			server = new WebsocketServerIO(1515);
+			server.m = m;
+			server.start();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
 	}
 }

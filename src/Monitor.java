@@ -126,6 +126,7 @@ public class Monitor {
 	{
 		synchronized(wall){
 			writeImage(wall, "wallpaper2.png");
+			writeImage(wall, "../public_html/DesktopCreator/wallpaper.png");
 		}
 	}
 	

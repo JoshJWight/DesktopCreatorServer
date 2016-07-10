@@ -35,7 +35,7 @@ public class DownloadThread extends Thread{
 			{
 				
 				String url = m.nextURL();
-				System.out.println(url);
+				System.out.println("Downloading " + url);
 				BufferedImage img;
 				try {
 					img = downloadImage(url);
