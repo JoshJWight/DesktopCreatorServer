@@ -35,6 +35,8 @@ public class Monitor {
 	public static final int QUEUE_SIZE = 10;
 	public static final int URL_QUEUE_SIZE = 1000000;
 	
+	public static final String PATH_TO_IMAGES = "image/";
+	
 	private BufferedImage wall;
 	
 	private int driveBatchSize = 0;
@@ -126,7 +128,7 @@ public class Monitor {
 	{
 		synchronized(wall){
 			writeImage(wall, "wallpaper2.png");
-			writeImage(wall, "../public_html/DesktopCreator/wallpaper.png");
+			writeImage(wall, PATH_TO_IMAGES + "wallpaper.png");
 		}
 	}
 	
