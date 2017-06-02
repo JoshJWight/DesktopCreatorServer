@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+   <project name="DesktopCreatorServer" default="build-jar">
+   <property name="src.dir" value="src"/>
+   <property name="build.dir" value="bin"/>
+   
+   <target name="build">
+      <mkdir dir="${build.dir}"/>
+      <javac destdir="${build.dir}">
+		 <classpath>
+			<pathelement path="lib/opencv-320.jar" />
+			<pathelement path="lib/java_websocket.jar" />
+		 </classpath>
+         <src path="${src.dir}"/>
+         
+      </javac>
+   </target>
+   
+   <target name="build-jar" depends="clean,build">
+   <jar destfile="DesktopCreatorServer.jar"
+      basedir="${build.dir}">
+	  <zipgroupfileset dir="lib"/>
+      <manifest>
+         <attribute name="Main-Class" value="DesktopCreatorServer"/>
+      </manifest>
+   </jar>
+   </target>
+   
+   <target name="clean">
+   <delete>
+      <fileset dir="${build.dir}">
+         <include name="**/*.class"/>
+      </fileset>
+   </delete>
+</target>
+</project>

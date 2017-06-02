@@ -6,7 +6,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/workspace/DesktopCreatorServer"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/workspace/DesktopCreatorServer/java_websocket.jar"/>
-	<classpathentry kind="lib" path="C:/workspace/DesktopCreatorServer/opencv-320.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/DesktopCreatorServer/lib/java_websocket.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/DesktopCreatorServer/lib/opencv-320.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
