@@ -8,5 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/workspace/DesktopCreatorServer/lib/java_websocket.jar"/>
 	<classpathentry kind="lib" path="C:/workspace/DesktopCreatorServer/lib/opencv-320.jar"/>
+	<classpathentry kind="lib" path="C:/workspace/DesktopCreatorServer/lib/sqlite-jdbc-3.18.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

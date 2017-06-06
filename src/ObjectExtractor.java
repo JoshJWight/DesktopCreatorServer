@@ -105,6 +105,7 @@ public class ObjectExtractor {
 		
 		int bestSize = 0;
 		Mat bestMask = null;
+		Region bestRegion = null;
 		
 		for(Mat edge: edges) {
 			Region r = largestRegion(edge);
@@ -113,6 +114,7 @@ public class ObjectExtractor {
 			if(r.size > bestSize) {
 				bestSize = r.size;
 				bestMask = mask;
+				bestRegion = r;
 			}
 		}
 		
@@ -126,7 +128,20 @@ public class ObjectExtractor {
 		Mat masked = imgBGR.clone();
 		Core.bitwise_and(imgBGR, bgrMask, masked);
 		
-		return matToBufferedImage(masked);
+		BufferedImage outImg = matToBufferedImage(masked.submat(bestRegion.bounding));
+		BufferedImage cutImg = new BufferedImage(outImg.getWidth(), outImg.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+		//make background transparent
+		for(int x = 0; x<outImg.getWidth(); x++) {
+			for(int y = 0; y<outImg.getHeight(); y++) {
+				int abgr = (outImg.getRGB(x, y) | 0xFF000000);
+				if(abgr == 0xFF000000) {
+					cutImg.setRGB(x, y, 0x00000000);
+				} else {
+					cutImg.setRGB(x, y, abgr );
+				}
+			}
+		}
+		return cutImg;
 	}
 	
 	public static Mat imfill(Mat img) {
@@ -173,10 +188,17 @@ public class ObjectExtractor {
 	}
 	
 	public static void main(String args[]) {
+		//TESTS
 		try {
-			BufferedImage img = ImageIO.read(new File("vader.jpg"));
-			BufferedImage result = cutOutObject(img);
-			imshow(result, "Object");
+			BufferedImage img1 = ImageIO.read(new File("vader.jpg"));
+			BufferedImage result1 = cutOutObject(img1);
+			BufferedImage img2 = ImageIO.read(new File("apple.jpg"));
+			BufferedImage result2 = cutOutObject(img2);
+			DBSession.start();
+			DBSession.session.storeObject(result1);
+			DBSession.session.storeObject(result2);
+			imshow(DBSession.session.retrieveObject(), "1");
+			imshow(DBSession.session.retrieveObject(), "2");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

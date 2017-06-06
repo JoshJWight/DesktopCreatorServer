@@ -1,3 +1,4 @@
 **/*.png
 **/*.jpg
-**/*.class
+bin/*.class
+*.db
