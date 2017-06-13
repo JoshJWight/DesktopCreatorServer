@@ -30,12 +30,26 @@ public class WebsocketServerIO extends WebSocketServer{
 
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
-		String urls[] = message.split("\n");
+		String args[] = message.split(";");
 		
-		System.out.println( "received " + urls.length + " urls from: " + conn);
+		if(args.length < 1) {
+			System.out.println("received empty message");
+			return;
+		}
 		
-		for(String s: urls) {
-			m.queueURL(s);
+		switch(args[0]){
+		case "submit-url":{
+			if(args.length < 2) {
+				System.out.println("received submit-url with no args");
+			} else {
+				System.out.println("received url " + args[1]);
+				m.queueURL(args[1]);
+			}
+			break;
+		}
+		default:{
+			System.out.println("received unsupported message " + message);
+		}
 		}
 		
 	}
