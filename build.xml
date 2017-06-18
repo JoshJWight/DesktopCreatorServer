@@ -10,6 +10,7 @@
 			<pathelement path="lib/opencv-320.jar" />
 			<pathelement path="lib/java_websocket.jar" />
 			<pathelement path="lib/sqlite-jdbc-3.18.0.jar" />
+			<pathelement path="lib/gson-2.8.1.jar" />
 		 </classpath>
          <src path="${src.dir}"/>
          

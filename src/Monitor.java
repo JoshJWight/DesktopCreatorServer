@@ -162,21 +162,12 @@ public class Monitor {
 		return arr;
 	}
 	
-	public boolean hasNext()
-	{
-		return urlQueue.size()>0;
-	}
-	
-	public boolean hasNextImg()
-	{
-		return imgQueue.size()>0;
-	}
-	
 	public void queueURL(String url) {
 		synchronized(urlQueue) {
 			//just pitch urls if we're over the limit.
 			if(urlQueue.size()<=URL_QUEUE_SIZE){
 				urlQueue.addLast(url);
+				urlQueue.notifyAll();
 			}
 		}
 	}
@@ -184,11 +175,19 @@ public class Monitor {
 	public String nextURL()
 	{
 		synchronized(urlQueue){
-			if(urlQueue.isEmpty()) {
-				return null;
-			} else {
-				return urlQueue.removeFirst();
+			while(urlQueue.size()==0)
+			{
+				try {
+					urlQueue.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					return null;
+				}
 			}
+			String url = urlQueue.removeFirst();
+			urlQueue.notifyAll();
+			return url;
+			
 		}
 	}
 	public BufferedImage readImage(String path)

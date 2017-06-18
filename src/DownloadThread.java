@@ -27,37 +27,23 @@ public class DownloadThread extends Thread{
 	
 	public void run(){
 		while(true){
-			long startTime = System.currentTimeMillis();
-			
-			long lastTime = startTime;
-			
-			while(m.hasNext())
-			{
+			String url = m.nextURL();
+			System.out.println("Downloading " + url);
+			BufferedImage img;
+			try {
+				img = downloadImage(url);
 				
-				String url = m.nextURL();
-				System.out.println("Downloading " + url);
-				BufferedImage img;
-				try {
-					img = downloadImage(url);
-					
-					
-					if(img!=null){
-						m.queueImage(img);
-					}
-					
-					
-				} catch (Exception e) {
-					e.printStackTrace();
+				
+				if(img!=null){
+					m.queueImage(img);
 				}
 				
-				yield();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			
-			long diff = System.currentTimeMillis() - startTime;
-			try {
-				Thread.sleep(Math.max(1000 - diff, 1));
-			} catch (InterruptedException e) {
-			}
+			yield();
 		}
 	}
 	public BufferedImage downloadImage(String imageUrl) throws IOException {

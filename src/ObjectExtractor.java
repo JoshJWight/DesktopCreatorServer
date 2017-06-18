@@ -109,6 +109,10 @@ public class ObjectExtractor {
 		
 		for(Mat edge: edges) {
 			Region r = largestRegion(edge);
+			if(r==null) {
+				continue;
+			}
+			
 			Mat mask = cutOutRegion(edge, r);
 			
 			if(r.size > bestSize) {
@@ -185,24 +189,6 @@ public class ObjectExtractor {
 		Mat result = img.clone();
 		Core.bitwise_and(img, inv, result);
 		return result;
-	}
-	
-	public static void main(String args[]) {
-		//TESTS
-		try {
-			BufferedImage img1 = ImageIO.read(new File("vader.jpg"));
-			BufferedImage result1 = cutOutObject(img1);
-			BufferedImage img2 = ImageIO.read(new File("apple.jpg"));
-			BufferedImage result2 = cutOutObject(img2);
-			DBSession.start();
-			DBSession.session.storeObject(result1);
-			DBSession.session.storeObject(result2);
-			imshow(DBSession.session.retrieveObject(), "1");
-			imshow(DBSession.session.retrieveObject(), "2");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	public static void imshow(Mat m){

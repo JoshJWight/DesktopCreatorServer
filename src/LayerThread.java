@@ -14,12 +14,11 @@ import javax.imageio.ImageIO;
  * @author Josh Wight
  *
  */
+
+//not currently in use
 public class LayerThread extends Thread{
 
 	private Monitor m;
-	/**
-	 * 
-	 */
 	public LayerThread(Monitor m) {
 		this.m=m;
 	}
@@ -29,28 +28,16 @@ public class LayerThread extends Thread{
 		
 		
 		while(true){
-			long startTime = System.currentTimeMillis();
+			BufferedImage img = m.dequeueImage();
 			
-			long lastTime = startTime;
-			
-			while(m.hasNextImg())
+			if(img!=null)
 			{
-				BufferedImage img = m.dequeueImage();
-				
-				if(img!=null)
-				{
-					m.applyToWall(img);
-				}
-				
-				yield();
+				m.applyToWall(img);
 			}
 			
-			long diff = System.currentTimeMillis() - startTime;
-			try {
-				Thread.sleep(Math.max(1000 - diff, 1));
-			} catch (InterruptedException e) {
-			}
+			yield();	
 		}
+		
 	}
 	
 

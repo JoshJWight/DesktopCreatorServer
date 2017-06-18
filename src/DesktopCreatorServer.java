@@ -8,7 +8,8 @@ import java.util.ArrayList;
 public class DesktopCreatorServer {
 
 	private static SaveThread saveThread;
-	private static LayerThread layerThread;
+	//private static LayerThread layerThread;
+	private static ExtractThread extractThread;
 	private static ArrayList<DownloadThread> downloadThreads;
 	private static Monitor m;
 	private static WebsocketServerIO server;
@@ -20,12 +21,17 @@ public class DesktopCreatorServer {
 
 	private static void startThreads()
 	{
+		DBSession.start();
+		
 		m = new Monitor();
 		
 		saveThread = new SaveThread(m);
 		saveThread.start();
-		layerThread = new LayerThread(m);
-		layerThread.start();
+		extractThread = new ExtractThread(m);
+		extractThread.start();
+		//layerThread = new LayerThread(m);
+		//layerThread.start();
+		
 		
 		downloadThreads = new ArrayList<DownloadThread>();
 		for(int i=0; i<20; i++)

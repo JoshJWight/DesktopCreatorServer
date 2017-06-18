@@ -48,18 +48,17 @@ public class DBSession {
 		executeUpdate("CREATE TABLE IF NOT EXISTS objects(name STRING)");
 	}
 	
-	public synchronized void storeObject(BufferedImage object) {
-		String objName = object.hashCode() + "";
-		executeUpdate("INSERT INTO objects VALUES(\"" + objName + "\")");
+	public synchronized void storeObject(ImageObject object) {
+		executeUpdate("INSERT INTO objects VALUES(\"" + object.name + "\")");
 		try {
-			ImageIO.write(object, "png", new File(OBJECTS_PATH + "/" + objName + ".png"));
+			ImageIO.write(object.image, "png", new File(OBJECTS_PATH + "/" + object.name + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public synchronized BufferedImage retrieveObject() {
-		ResultSet rs = executeQuery("SELECT * FROM objects LIMIT 1");
+	public synchronized ImageObject retrieveObject() {
+		ResultSet rs = executeQuery("SELECT * FROM objects ORDER BY RANDOM() LIMIT 1");
 		try {
 			if(rs.next())
 			{
@@ -67,9 +66,7 @@ public class DBSession {
 				File img = new File(OBJECTS_PATH + "/" + objName + ".png");
 				BufferedImage obj = ImageIO.read(img);
 				rs.close();
-				executeUpdate("DELETE FROM objects WHERE name=\"" + objName + "\"");
-				img.delete();
-				return obj;
+				return new ImageObject(objName, obj);
 			}
 			rs.close();
 		} catch (SQLException e) {
@@ -78,6 +75,13 @@ public class DBSession {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public synchronized void deleteObject(ImageObject obj) {
+
+		executeUpdate("DELETE FROM objects WHERE name=\"" + obj.name + "\"");
+		File img = new File(OBJECTS_PATH + "/" + obj.name + ".png");
+		img.delete();
 	}
 	
 	private void executeUpdate(String sql)

@@ -5,13 +5,19 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+
 public class WebsocketServerIO extends WebSocketServer{
 
 	public Monitor m;
+	private JsonParser json;
 	
 	public WebsocketServerIO( int port ) throws UnknownHostException {
 		super( new InetSocketAddress( port ) );
 		System.out.println("Server listening on port " + port);
+		json = new JsonParser();
 	}
 
 	public WebsocketServerIO( InetSocketAddress address ) {
@@ -30,21 +36,28 @@ public class WebsocketServerIO extends WebSocketServer{
 
 	@Override
 	public void onMessage( WebSocket conn, String message ) {
-		String args[] = message.split(";");
+		JsonObject messageObj = json.parse(message).getAsJsonObject();
 		
-		if(args.length < 1) {
-			System.out.println("received empty message");
-			return;
-		}
+		String method = messageObj.get("method").getAsString();
 		
-		switch(args[0]){
+		switch(method){
 		case "submit-url":{
-			if(args.length < 2) {
-				System.out.println("received submit-url with no args");
+			String url = messageObj.get("url").getAsString();
+			
+			System.out.println("received url " + url);
+			m.queueURL(url);
+			break;
+		}
+		case "get-object":{
+			ImageObject obj = DBSession.session.retrieveObject();
+			if(obj != null) {
+				System.out.println("Serving object " + obj.name);
+				conn.send("{\"method\":\"get-object\", \"name\":\"" + obj.name + "\", \"image\":\"" + obj.toBase64() + "\"}");
 			} else {
-				System.out.println("received url " + args[1]);
-				m.queueURL(args[1]);
+				System.out.println("Serving null");
+				conn.send("");
 			}
+			
 			break;
 		}
 		default:{
