@@ -15,6 +15,7 @@ public class DBSession {
 	
 	private final String db_name = "objects.db";
 	private final String OBJECTS_PATH = "obj";
+	private final String ARCHIVE_PATH = "obj/archive";
 	
 	Statement s;
 	Connection c;
@@ -77,10 +78,33 @@ public class DBSession {
 		return null;
 	}
 	
-	public synchronized void deleteObject(ImageObject obj) {
+	public synchronized ImageObject retrieveObject(String objName) {	
+		try {
+			File img = new File(OBJECTS_PATH + "/" + objName + ".png");
+			BufferedImage obj;
+			obj = ImageIO.read(img);
+			return new ImageObject(objName, obj);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		return null;
+	}
+	
+	public synchronized void saveObject(ImageObject obj) {
+		try {
+			ImageIO.write(obj.image, "png", new File(ARCHIVE_PATH + "/" + obj.name + ".png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		deleteObject(obj.name);
+	}
+	
+	public synchronized void deleteObject(String name) {
 
-		executeUpdate("DELETE FROM objects WHERE name=\"" + obj.name + "\"");
-		File img = new File(OBJECTS_PATH + "/" + obj.name + ".png");
+		executeUpdate("DELETE FROM objects WHERE name=\"" + name + "\"");
+		File img = new File(OBJECTS_PATH + "/" + name + ".png");
 		img.delete();
 	}
 	

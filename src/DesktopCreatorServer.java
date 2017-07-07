@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class DesktopCreatorServer {
 
 	private static SaveThread saveThread;
-	//private static LayerThread layerThread;
+	private static LayerThread layerThread;
 	private static ExtractThread extractThread;
 	private static ArrayList<DownloadThread> downloadThreads;
 	private static Monitor m;
@@ -29,8 +29,8 @@ public class DesktopCreatorServer {
 		saveThread.start();
 		extractThread = new ExtractThread(m);
 		extractThread.start();
-		//layerThread = new LayerThread(m);
-		//layerThread.start();
+		layerThread = new LayerThread(m);
+		layerThread.start();
 		
 		
 		downloadThreads = new ArrayList<DownloadThread>();

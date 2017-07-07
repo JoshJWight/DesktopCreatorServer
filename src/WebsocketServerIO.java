@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
@@ -53,6 +54,32 @@ public class WebsocketServerIO extends WebSocketServer{
 			if(obj != null) {
 				System.out.println("Serving object " + obj.name);
 				conn.send("{\"method\":\"get-object\", \"name\":\"" + obj.name + "\", \"image\":\"" + obj.toBase64() + "\"}");
+			} else {
+				System.out.println("Serving null");
+				conn.send("");
+			}
+			
+			break;
+		}
+		case "rate-object":{
+			
+			boolean rating = messageObj.get("rating").getAsBoolean();
+			String name = messageObj.get("name").getAsString();
+			System.out.println("received rating " + rating + " for " + name);
+			if(rating == true) {
+				ImageObject imgObj = DBSession.session.retrieveObject(name);
+				DBSession.session.saveObject(imgObj);
+				m.queueObj(imgObj);
+			} else {
+				DBSession.session.deleteObject(name);
+			}
+			break;
+		}
+		case "get-wallpaper":{
+			BufferedImage wall = m.getWallImg();
+			if(wall != null) {
+				System.out.println("Serving wallpaper");
+				conn.send("{\"method\":\"get-wallpaper\", \"image\":\"" + new ImageObject("temp", wall).toBase64() + "\"}");
 			} else {
 				System.out.println("Serving null");
 				conn.send("");

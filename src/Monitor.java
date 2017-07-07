@@ -1,17 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -39,10 +29,9 @@ public class Monitor {
 	
 	private BufferedImage wall;
 	
-	private int driveBatchSize = 0;
-	
 	private LinkedList<BufferedImage> imgQueue;
 	private LinkedList<String> urlQueue;
+	private LinkedList<ImageObject> objQueue;
 	
 	private long lastLayerTime;
 	
@@ -67,6 +56,7 @@ public class Monitor {
 		
 		imgQueue = new LinkedList<BufferedImage>();
 		urlQueue = new LinkedList<String>();
+		objQueue = new LinkedList<ImageObject>();
 		
 	}
 	
@@ -115,6 +105,39 @@ public class Monitor {
 		BufferedImage img = imgQueue.removeFirst();
 		imgQueue.notifyAll();
 		return img;
+		}
+	}
+	
+	public void queueObj(ImageObject obj){
+		synchronized(objQueue){
+		while(objQueue.size()>=QUEUE_SIZE)
+		{
+			try {
+				objQueue.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		objQueue.addLast(obj);
+		objQueue.notifyAll();
+		}
+	}
+	
+	public ImageObject dequeueObj()
+	{
+		synchronized(objQueue){
+		while(objQueue.size()==0)
+		{
+			try {
+				objQueue.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		ImageObject obj = objQueue.removeFirst();
+		objQueue.notifyAll();
+		return obj;
 		}
 	}
 	
@@ -227,15 +250,16 @@ public class Monitor {
 					continue;
 				}
 				
-				int pixel1 = original.getRGB(xOffset + x, yOffset + y);
-				int pixel2 = img.getRGB(x, y);
-				
-				int result = weightRGB(pixel1, pixel2, weight);
+				int result = img.getRGB(x, y);
+				if(new Color(result).getAlpha()==0) {
+					result = original.getRGB(xOffset + x, yOffset + y);
+				}
 				original.setRGB(xOffset + x, yOffset + y, result);
 			}
 		}
 		
 	}
+	
 	public int weightRGB(int rgb1, int rgb2, float weight)
 	{
 		Color c1 = new Color(rgb1);

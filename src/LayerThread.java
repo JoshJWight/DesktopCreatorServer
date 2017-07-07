@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
  *
  */
 
-//not currently in use
+
 public class LayerThread extends Thread{
 
 	private Monitor m;
@@ -28,12 +28,8 @@ public class LayerThread extends Thread{
 		
 		
 		while(true){
-			BufferedImage img = m.dequeueImage();
-			
-			if(img!=null)
-			{
-				m.applyToWall(img);
-			}
+			ImageObject obj = m.dequeueObj();
+			m.applyToWall(obj.image);
 			
 			yield();	
 		}
